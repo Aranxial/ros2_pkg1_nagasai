@@ -1,0 +1,19 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 1000
+    use_sim_time: true
+
+    wheel_controller:
+      type: effort_controllers/JointGroupEffortController
+
+wheel_controller:
+  ros__parameters:
+    joints: 
+      - cube_disk_joint_X
+      - cube_disk_joint_Y
+      - cube_disk_joint_Z
+    command_interfaces:
+      - effort
+    state_interfaces:
+      - effort
+   

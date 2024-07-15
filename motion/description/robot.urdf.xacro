@@ -1,0 +1,150 @@
+<?xml version="1.0"?>
+<robot name="hollow_cube_with_reaction_wheel" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Define the hollow cube frame using six planes -->
+  <link name="base_link"/>
+  
+  <!-- Cube Link -->
+  <link name="cube">
+    <inertial>
+      <mass value="1.0"/>
+      <origin xyz="0 0 0.5" rpy="0 0 0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
+    </inertial>
+    <collision>
+      <origin xyz="0 0 0.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="1 1 1"/>
+      </geometry>
+    </collision>
+    <visual>
+      <geometry>
+        <box size="1 1 0.05"/>
+      </geometry>
+      <origin xyz="0 0 1" rpy="0 0 0"/>
+      <material name="gray">
+        <color rgba="0.5 0.5 0.5 1.0"/>
+      </material>
+    </visual>
+    
+
+    <visual>
+      <geometry>
+        <box size="1 1 0.05"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <material name="gray">
+        <color rgba="0.5 0.5 0.5 1.0"/>
+      </material>
+    </visual>
+
+
+  
+    <visual>
+      <geometry>
+        <box size="1 0.05 1"/>
+      </geometry>
+      <origin xyz="0 0.5 0.5" rpy="0 0 0"/>
+      <material name="gray">
+        <color rgba="0.5 0.5 0.5 1.0"/>
+      </material>
+    </visual>
+
+
+    <visual>
+      <geometry>
+        <box size="1 0.05 1"/>
+      </geometry>
+      <origin xyz="0 -0.5 0.5" rpy="0 0 0"/>
+      <material name="gray">
+        <color rgba="0.5 0.5 0.5 1.0"/>
+      </material>
+    </visual>
+  
+
+  
+    <visual>
+      <geometry>
+        <box size="0.05 1 1"/>
+      </geometry>
+      <origin xyz="0.5 0 0.5" rpy="0 0 0"/>
+      <material name="gray">
+        <color rgba="0.5 0.5 0.5 1.0"/>
+      </material>
+    </visual>
+  
+
+    <visual>
+      <geometry>
+        <box size="0.05 1 1"/>
+      </geometry>
+      <origin xyz="-0.5 0 0.5" rpy="0 0 0"/>
+      <material name="gray">
+        <color rgba="0.5 0.5 0.5 1.0"/>
+      </material>
+    </visual>
+</link>
+
+
+  <!-- Reaction Wheel Link -->
+  <link name="reaction_wheel">
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+    <collision>
+      <origin xyz="0 0 0" rpy="-1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.1" length="0.05"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="-1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.4" length="0.05"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0.0 0.0 1.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Fixed joint between base_link and cube -->
+  <joint name="base_to_cube" type="fixed">
+    <parent link="base_link"/>
+    <child link="cube"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Continuous joint between base_link and reaction_wheel -->
+  <joint name="wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="reaction_wheel"/>
+    <origin xyz="0 0 0.5" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+
+  <ros2_control name ="GazeboSystem" type="system">
+    <hardware>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+    </hardware>
+    <joint name="wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface name="velocity"/>
+      <state_interface name="position"/>
+      <state_interface name="effort"/>
+    </joint >
+  </ros2_control>
+
+  <gazebo>
+    <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+      <parameters>$(find motion)/config/controllers.yaml</parameters>
+      <robot_param>robot_description</robot_param>
+      <robot_param_node>robot_state_publisher</robot_param_node>
+    </plugin>
+  </gazebo> 
+
+
+
+</robot>
